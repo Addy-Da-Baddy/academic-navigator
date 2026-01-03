@@ -1,5 +1,5 @@
 import { Trash2, BookOpen } from 'lucide-react';
-import { Subject, GRADE_SCALE } from '@/lib/types';
+import { Subject } from '@/lib/types';
 import { getAttendancePercentage, getAttendanceStatus } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+const GRADE_POINTS = [10, 9, 8, 7, 6, 5, 4, 0];
 
 interface SubjectCardProps {
   subject: Subject;
@@ -26,8 +28,6 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
     warning: 'bg-warning',
     danger: 'bg-destructive',
   };
-
-  const currentGrade = GRADE_SCALE.find(g => g.point === subject.gradePoint)?.grade || 'N/A';
 
   return (
     <div className="group relative rounded-xl border border-border bg-card p-4 transition-all card-hover">
@@ -49,16 +49,13 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
               value={subject.gradePoint.toString()}
               onValueChange={(value) => onUpdate({ gradePoint: parseFloat(value) })}
             >
-              <SelectTrigger className="w-[100px] h-9 font-mono text-lg font-bold text-primary border-none bg-transparent hover:bg-muted/50">
-                <SelectValue>
-                  {currentGrade} ({subject.gradePoint.toFixed(1)})
-                </SelectValue>
+              <SelectTrigger className="w-[70px] h-9 font-mono text-xl font-bold text-primary border-none bg-transparent hover:bg-muted/50 justify-center">
+                <SelectValue>{subject.gradePoint}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {GRADE_SCALE.map((grade) => (
-                  <SelectItem key={grade.grade} value={grade.point.toString()}>
-                    <span className="font-mono font-semibold">{grade.grade}</span>
-                    <span className="ml-2 text-muted-foreground">({grade.point}) - {grade.description}</span>
+                {GRADE_POINTS.map((point) => (
+                  <SelectItem key={point} value={point.toString()}>
+                    <span className="font-mono font-semibold">{point}</span>
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { AppData, Subject, Semester, ViewType } from '@/lib/types';
+import { AppData, Subject, Semester, ViewType, TimetableEntry, Day } from '@/lib/types';
 import { loadData, saveData, generateId, calculateSGPA, calculateCGPA } from '@/lib/store';
 
 export const useAcademicData = () => {
@@ -125,6 +125,42 @@ export const useAcademicData = () => {
     }));
   }, []);
 
+  const updateTimetableEntry = useCallback((day: Day, entryId: string, updates: Partial<TimetableEntry>) => {
+    setData(prev => ({
+      ...prev,
+      timetable: {
+        ...prev.timetable,
+        [day]: prev.timetable[day].map(entry =>
+          entry.id === entryId ? { ...entry, ...updates } : entry
+        ),
+      },
+    }));
+  }, []);
+
+  const addTimetableEntry = useCallback((day: Day, entry: Omit<TimetableEntry, 'id'>) => {
+    const newEntry: TimetableEntry = {
+      ...entry,
+      id: generateId(),
+    };
+    setData(prev => ({
+      ...prev,
+      timetable: {
+        ...prev.timetable,
+        [day]: [...(prev.timetable[day] || []), newEntry].sort((a, b) => a.startHour - b.startHour),
+      },
+    }));
+  }, []);
+
+  const removeTimetableEntry = useCallback((day: Day, entryId: string) => {
+    setData(prev => ({
+      ...prev,
+      timetable: {
+        ...prev.timetable,
+        [day]: prev.timetable[day].filter(entry => entry.id !== entryId),
+      },
+    }));
+  }, []);
+
   const currentSemester = data.semesters[activeSemester];
   const sgpaData = currentSemester ? calculateSGPA(currentSemester) : { sgpa: 0, totalCredits: 0 };
   const cgpaData = calculateCGPA(data.semesters);
@@ -145,5 +181,8 @@ export const useAcademicData = () => {
     removeSemester,
     updateAttendance,
     setTargetCGPA,
+    updateTimetableEntry,
+    addTimetableEntry,
+    removeTimetableEntry,
   };
 };

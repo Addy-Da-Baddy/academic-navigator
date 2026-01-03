@@ -21,6 +21,10 @@ const Index = () => {
     addSemester,
     removeSemester,
     updateAttendance,
+    setTargetCGPA,
+    updateTimetableEntry,
+    addTimetableEntry,
+    removeTimetableEntry,
   } = useAcademicData();
 
   return (
@@ -41,6 +45,7 @@ const Index = () => {
             onUpdateSubject={updateSubject}
             onAddSubject={addSubject}
             onRemoveSubject={removeSubject}
+            onSetTargetCGPA={setTargetCGPA}
           />
         )}
         
@@ -61,7 +66,12 @@ const Index = () => {
         )}
         
         {currentView === 'timetable' && (
-          <Timetable timetable={data.timetable} />
+          <Timetable
+            timetable={data.timetable}
+            onUpdateEntry={updateTimetableEntry}
+            onAddEntry={addTimetableEntry}
+            onRemoveEntry={removeTimetableEntry}
+          />
         )}
       </main>
     </div>

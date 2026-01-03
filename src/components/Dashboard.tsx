@@ -1,4 +1,5 @@
-import { Target, TrendingUp, BookOpen, Award } from 'lucide-react';
+import { useState } from 'react';
+import { Target, TrendingUp, BookOpen, Award, Pencil, Check } from 'lucide-react';
 import { Semester, AppData } from '@/lib/types';
 import { StatCard } from './StatCard';
 import { ProgressRing } from './ProgressRing';
@@ -6,6 +7,8 @@ import { SemesterTabs } from './SemesterTabs';
 import { SubjectCard } from './SubjectCard';
 import { AddSubjectDialog } from './AddSubjectDialog';
 import { Subject } from '@/lib/types';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 
 interface DashboardProps {
   data: AppData;
@@ -19,6 +22,7 @@ interface DashboardProps {
   onUpdateSubject: (semesterId: number, subjectId: string, updates: Partial<Subject>) => void;
   onAddSubject: (semesterId: number, subject: Omit<Subject, 'id'>) => void;
   onRemoveSubject: (semesterId: number, subjectId: string) => void;
+  onSetTargetCGPA: (target: number) => void;
 }
 
 export const Dashboard = ({
@@ -33,8 +37,19 @@ export const Dashboard = ({
   onUpdateSubject,
   onAddSubject,
   onRemoveSubject,
+  onSetTargetCGPA,
 }: DashboardProps) => {
   const progressToTarget = (cgpaData.cgpa / data.targetCGPA) * 100;
+  const [isEditingTarget, setIsEditingTarget] = useState(false);
+  const [targetValue, setTargetValue] = useState(data.targetCGPA.toString());
+
+  const handleSaveTarget = () => {
+    const value = parseFloat(targetValue);
+    if (!isNaN(value) && value >= 0 && value <= 10) {
+      onSetTargetCGPA(value);
+    }
+    setIsEditingTarget(false);
+  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -54,12 +69,52 @@ export const Dashboard = ({
           icon={Award}
           variant="success"
         />
-        <StatCard
-          title="Target CGPA"
-          value={data.targetCGPA}
-          subtitle={`${progressToTarget.toFixed(0)}% achieved`}
-          icon={Target}
-        />
+        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
+                <Target className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">Target CGPA</p>
+                {isEditingTarget ? (
+                  <div className="flex items-center gap-1">
+                    <Input
+                      type="number"
+                      step="0.1"
+                      min="0"
+                      max="10"
+                      value={targetValue}
+                      onChange={(e) => setTargetValue(e.target.value)}
+                      className="h-7 w-20 font-mono text-lg font-bold"
+                      autoFocus
+                      onKeyDown={(e) => e.key === 'Enter' && handleSaveTarget()}
+                    />
+                    <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleSaveTarget}>
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <span className="font-mono text-2xl font-bold text-foreground">{data.targetCGPA.toFixed(1)}</span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-6 w-6 opacity-50 hover:opacity-100"
+                      onClick={() => {
+                        setTargetValue(data.targetCGPA.toString());
+                        setIsEditingTarget(true);
+                      }}
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">{progressToTarget.toFixed(0)}% achieved</p>
+        </div>
         <StatCard
           title="Total Subjects"
           value={currentSemester?.subjects.length || 0}
