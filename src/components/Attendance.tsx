@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Plus, Minus, AlertTriangle, CheckCircle } from 'lucide-react';
 import { AppData, Semester, Subject } from '@/lib/types';
 import { getAttendancePercentage, getAttendanceStatus } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { SemesterTabs } from './SemesterTabs';
 
 interface AttendanceProps {
@@ -13,6 +15,7 @@ interface AttendanceProps {
   onAddSemester: () => void;
   onRemoveSemester: (id: number) => void;
   onUpdateAttendance: (semesterId: number, subjectId: string, delta: number, type: 'attended' | 'total') => void;
+  onSetAttendance: (semesterId: number, subjectId: string, attended: number, total: number) => void;
 }
 
 export const Attendance = ({
@@ -23,6 +26,7 @@ export const Attendance = ({
   onAddSemester,
   onRemoveSemester,
   onUpdateAttendance,
+  onSetAttendance,
 }: AttendanceProps) => {
   // Calculate overall attendance
   const totalClasses = currentSemester?.subjects.reduce((acc, s) => acc + s.attendance.total, 0) || 0;
@@ -103,16 +107,18 @@ export const Attendance = ({
             <thead>
               <tr className="border-b border-border bg-muted/50">
                 <th className="px-4 py-3 text-left text-sm font-medium text-muted-foreground">Subject</th>
-                <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Attended</th>
                 <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Total</th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Present</th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Missed</th>
                 <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Percentage</th>
-                <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Actions</th>
+                <th className="px-4 py-3 text-center text-sm font-medium text-muted-foreground">Quick Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {currentSemester?.subjects.map(subject => {
                 const percentage = getAttendancePercentage(subject);
                 const status = getAttendanceStatus(percentage);
+                const missed = subject.attendance.total - subject.attendance.attended;
 
                 return (
                   <tr key={subject.id} className="hover:bg-muted/30 transition-colors">
@@ -120,49 +126,44 @@ export const Attendance = ({
                       <span className="font-medium text-card-foreground">{subject.name}</span>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => onUpdateAttendance(activeSemester, subject.id, -1, 'attended')}
-                          disabled={subject.attendance.attended <= 0}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="font-mono text-sm w-8 text-center">{subject.attendance.attended}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => onUpdateAttendance(activeSemester, subject.id, 1, 'attended')}
-                          disabled={subject.attendance.attended >= subject.attendance.total}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
+                      <Input
+                        type="number"
+                        min="0"
+                        value={subject.attendance.total}
+                        onChange={(e) => {
+                          const newTotal = Math.max(0, parseInt(e.target.value) || 0);
+                          const newAttended = Math.min(subject.attendance.attended, newTotal);
+                          onSetAttendance(activeSemester, subject.id, newAttended, newTotal);
+                        }}
+                        className="w-16 h-8 text-center font-mono"
+                      />
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => onUpdateAttendance(activeSemester, subject.id, -1, 'total')}
-                          disabled={subject.attendance.total <= subject.attendance.attended}
-                        >
-                          <Minus className="h-3 w-3" />
-                        </Button>
-                        <span className="font-mono text-sm w-8 text-center">{subject.attendance.total}</span>
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          className="h-7 w-7"
-                          onClick={() => onUpdateAttendance(activeSemester, subject.id, 1, 'total')}
-                        >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
+                      <Input
+                        type="number"
+                        min="0"
+                        max={subject.attendance.total}
+                        value={subject.attendance.attended}
+                        onChange={(e) => {
+                          const newAttended = Math.max(0, Math.min(subject.attendance.total, parseInt(e.target.value) || 0));
+                          onSetAttendance(activeSemester, subject.id, newAttended, subject.attendance.total);
+                        }}
+                        className="w-16 h-8 text-center font-mono"
+                      />
+                    </td>
+                    <td className="px-4 py-3">
+                      <Input
+                        type="number"
+                        min="0"
+                        max={subject.attendance.total}
+                        value={missed}
+                        onChange={(e) => {
+                          const newMissed = Math.max(0, Math.min(subject.attendance.total, parseInt(e.target.value) || 0));
+                          const newAttended = subject.attendance.total - newMissed;
+                          onSetAttendance(activeSemester, subject.id, newAttended, subject.attendance.total);
+                        }}
+                        className="w-16 h-8 text-center font-mono"
+                      />
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-col items-center gap-1">
@@ -182,7 +183,7 @@ export const Attendance = ({
                               status === 'warning' && 'bg-warning',
                               status === 'danger' && 'bg-destructive'
                             )}
-                            style={{ width: `${percentage}%` }}
+                            style={{ width: `${Math.min(100, percentage)}%` }}
                           />
                         </div>
                       </div>

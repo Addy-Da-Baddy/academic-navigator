@@ -11,7 +11,17 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const GRADE_POINTS = [10, 9, 8, 7, 6, 5, 4, 0];
+const GRADE_OPTIONS = [
+  { value: '-1', label: 'N/A' },
+  { value: '10', label: '10' },
+  { value: '9', label: '9' },
+  { value: '8', label: '8' },
+  { value: '7', label: '7' },
+  { value: '6', label: '6' },
+  { value: '5', label: '5' },
+  { value: '4', label: '4' },
+  { value: '0', label: '0' },
+];
 
 interface SubjectCardProps {
   subject: Subject;
@@ -50,12 +60,12 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
               onValueChange={(value) => onUpdate({ gradePoint: parseFloat(value) })}
             >
               <SelectTrigger className="w-[70px] h-9 font-mono text-xl font-bold text-primary border-none bg-transparent hover:bg-muted/50 justify-center">
-                <SelectValue>{subject.gradePoint}</SelectValue>
+                <SelectValue>{subject.gradePoint < 0 ? 'N/A' : subject.gradePoint}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {GRADE_POINTS.map((point) => (
-                  <SelectItem key={point} value={point.toString()}>
-                    <span className="font-mono font-semibold">{point}</span>
+                {GRADE_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    <span className="font-mono font-semibold">{option.label}</span>
                   </SelectItem>
                 ))}
               </SelectContent>

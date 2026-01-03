@@ -10,107 +10,107 @@ const DEFAULT_DATA: AppData = {
       id: 1,
       name: 'Semester 1',
       subjects: [
-        { id: generateId(), name: 'Engineering Mathematics - I', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Physics', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Mechanics of Solids', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Basic Electronics', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Basic Mechanical Engineering', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Communication Skills in English', credits: 2, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Universal Human Values and Professional Ethics (MLC)', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Physics Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Workshop Practice', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Graphics - I', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Mathematics - I', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Physics', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Mechanics of Solids', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Basic Electronics', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Basic Mechanical Engineering', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Communication Skills in English', credits: 2, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Universal Human Values and Professional Ethics (MLC)', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Physics Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Workshop Practice', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Graphics - I', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     2: {
       id: 2,
       name: 'Semester 2',
       subjects: [
-        { id: generateId(), name: 'Engineering Mathematics - II', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Chemistry', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Biology for Engineers', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Basic Electrical Technology', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Problem Solving Using Computers', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Environmental Studies', credits: 2, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Human Rights and Constitution (MLC)', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Chemistry Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'PSUC Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Engineering Graphics - II', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Mathematics - II', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Chemistry', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Biology for Engineers', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Basic Electrical Technology', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Problem Solving Using Computers', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Environmental Studies', credits: 2, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Human Rights and Constitution (MLC)', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Chemistry Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PSUC Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Graphics - II', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     3: {
       id: 3,
       name: 'Semester 3',
       subjects: [
-        { id: generateId(), name: 'Engineering Mathematics - III', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Data Structures', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Digital Systems and Computer Organization', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Object Oriented Programming', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Principles of Data Communication', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Data Structures Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Digital Systems Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Object Oriented Programming Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Mathematics - III', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Data Structures', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Digital Systems and Computer Organization', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Object Oriented Programming', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Principles of Data Communication', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Data Structures Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Digital Systems Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Object Oriented Programming Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     4: {
       id: 4,
       name: 'Semester 4',
       subjects: [
-        { id: generateId(), name: 'Engineering Mathematics - IV', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Database Management Systems', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Design and Analysis of Algorithms', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Computer Networks and Protocols', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Operating Systems', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Software Design Technology', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Database Systems Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Operating Systems Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Mathematics - IV', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Database Management Systems', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Design and Analysis of Algorithms', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Computer Networks and Protocols', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Operating Systems', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Software Design Technology', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Database Systems Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Operating Systems Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     5: {
       id: 5,
       name: 'Semester 5',
       subjects: [
-        { id: generateId(), name: 'Essentials of Management', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Information Security', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Embedded System Design', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Wireless Communication and Computing', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Statistical Data Analytics', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Embedded System Design Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Information Security Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Essentials of Management', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Information Security', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Embedded System Design', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Wireless Communication and Computing', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Statistical Data Analytics', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Embedded System Design Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Information Security Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     6: {
       id: 6,
       name: 'Semester 6',
       subjects: [
-        { id: generateId(), name: 'Engineering Economics and Financial Management', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Network Design and Programming', credits: 4, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Data Mining', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Ethical Hacking', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Applied Data Analytics', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Mobile Application Development Lab', credits: 2, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Network Design and Programming Lab', credits: 1, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Engineering Economics and Financial Management', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Network Design and Programming', credits: 4, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Data Mining', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Ethical Hacking', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Applied Data Analytics', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Mobile Application Development Lab', credits: 2, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Network Design and Programming Lab', credits: 1, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     7: {
       id: 7,
       name: 'Semester 7',
       subjects: [
-        { id: generateId(), name: 'PE - 3 / Minor Specialization', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'PE - 4 / Minor Specialization', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'PE - 5', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'PE - 6', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'PE - 7', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'OE - 2 (MLC)', credits: 0, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PE - 3 / Minor Specialization', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PE - 4 / Minor Specialization', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PE - 5', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PE - 6', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'PE - 7', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'OE - 2 (MLC)', credits: 0, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
     8: {
       id: 8,
       name: 'Semester 8',
       subjects: [
-        { id: generateId(), name: 'Internship / Project Work', credits: 12, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Professional Elective - 8', credits: 3, gradePoint: 0, attendance: { attended: 0, total: 0 } },
-        { id: generateId(), name: 'Seminar', credits: 2, gradePoint: 0, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Internship / Project Work', credits: 12, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Professional Elective - 8', credits: 3, gradePoint: -1, attendance: { attended: 0, total: 0 } },
+        { id: generateId(), name: 'Seminar', credits: 2, gradePoint: -1, attendance: { attended: 0, total: 0 } },
       ],
     },
   },
@@ -181,8 +181,11 @@ export const calculateSGPA = (semester: Semester): { sgpa: number; totalCredits:
   let totalCredits = 0;
   
   semester.subjects.forEach(subject => {
-    totalWeightedPoints += subject.credits * subject.gradePoint;
-    totalCredits += subject.credits;
+    // Skip subjects with no grade yet (gradePoint = -1)
+    if (subject.gradePoint >= 0) {
+      totalWeightedPoints += subject.credits * subject.gradePoint;
+      totalCredits += subject.credits;
+    }
   });
   
   return {
@@ -197,8 +200,11 @@ export const calculateCGPA = (semesters: { [key: number]: Semester }): { cgpa: n
   
   Object.values(semesters).forEach(semester => {
     semester.subjects.forEach(subject => {
-      totalWeightedPoints += subject.credits * subject.gradePoint;
-      totalCredits += subject.credits;
+      // Skip subjects with no grade yet (gradePoint = -1)
+      if (subject.gradePoint >= 0) {
+        totalWeightedPoints += subject.credits * subject.gradePoint;
+        totalCredits += subject.credits;
+      }
     });
   });
   

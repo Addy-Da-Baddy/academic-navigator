@@ -21,6 +21,7 @@ const Index = () => {
     addSemester,
     removeSemester,
     updateAttendance,
+    setAttendance,
     setTargetCGPA,
     updateTimetableEntry,
     addTimetableEntry,
@@ -62,6 +63,7 @@ const Index = () => {
             onAddSemester={addSemester}
             onRemoveSemester={removeSemester}
             onUpdateAttendance={updateAttendance}
+            onSetAttendance={setAttendance}
           />
         )}
         

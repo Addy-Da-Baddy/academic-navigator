@@ -118,6 +118,25 @@ export const useAcademicData = () => {
     }));
   }, []);
 
+  const setAttendance = useCallback((semesterId: number, subjectId: string, attended: number, total: number) => {
+    setData(prev => ({
+      ...prev,
+      semesters: {
+        ...prev.semesters,
+        [semesterId]: {
+          ...prev.semesters[semesterId],
+          subjects: prev.semesters[semesterId].subjects.map(s => {
+            if (s.id !== subjectId) return s;
+            return {
+              ...s,
+              attendance: { attended, total },
+            };
+          }),
+        },
+      },
+    }));
+  }, []);
+
   const setTargetCGPA = useCallback((target: number) => {
     setData(prev => ({
       ...prev,
@@ -180,6 +199,7 @@ export const useAcademicData = () => {
     addSemester,
     removeSemester,
     updateAttendance,
+    setAttendance,
     setTargetCGPA,
     updateTimetableEntry,
     addTimetableEntry,
