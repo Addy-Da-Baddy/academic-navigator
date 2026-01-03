@@ -1,8 +1,15 @@
 import { Trash2, BookOpen } from 'lucide-react';
-import { Subject } from '@/lib/types';
+import { Subject, GRADE_SCALE } from '@/lib/types';
 import { getAttendancePercentage, getAttendanceStatus } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 interface SubjectCardProps {
   subject: Subject;
@@ -20,6 +27,8 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
     danger: 'bg-destructive',
   };
 
+  const currentGrade = GRADE_SCALE.find(g => g.point === subject.gradePoint)?.grade || 'N/A';
+
   return (
     <div className="group relative rounded-xl border border-border bg-card p-4 transition-all card-hover">
       <div className="flex items-start justify-between gap-3">
@@ -36,7 +45,24 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
         </div>
         <div className="flex items-center gap-2">
           <div className="text-right">
-            <p className="font-mono text-xl font-bold text-primary">{subject.gradePoint.toFixed(1)}</p>
+            <Select
+              value={subject.gradePoint.toString()}
+              onValueChange={(value) => onUpdate({ gradePoint: parseFloat(value) })}
+            >
+              <SelectTrigger className="w-[100px] h-9 font-mono text-lg font-bold text-primary border-none bg-transparent hover:bg-muted/50">
+                <SelectValue>
+                  {currentGrade} ({subject.gradePoint.toFixed(1)})
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                {GRADE_SCALE.map((grade) => (
+                  <SelectItem key={grade.grade} value={grade.point.toString()}>
+                    <span className="font-mono font-semibold">{grade.grade}</span>
+                    <span className="ml-2 text-muted-foreground">({grade.point}) - {grade.description}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <p className="text-xs text-muted-foreground">Grade Point</p>
           </div>
           <Button
