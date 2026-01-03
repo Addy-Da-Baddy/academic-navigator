@@ -1,8 +1,11 @@
-import { Trash2, BookOpen } from 'lucide-react';
+import { useState } from 'react';
+import { Trash2, BookOpen, Pencil } from 'lucide-react';
 import { Subject } from '@/lib/types';
 import { getAttendancePercentage, getAttendanceStatus } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -10,6 +13,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 const GRADE_OPTIONS = [
   { value: '-1', label: 'N/A' },
@@ -30,6 +40,10 @@ interface SubjectCardProps {
 }
 
 export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) => {
+  const [editOpen, setEditOpen] = useState(false);
+  const [editName, setEditName] = useState(subject.name);
+  const [editCredits, setEditCredits] = useState(subject.credits.toString());
+  
   const attendancePercent = getAttendancePercentage(subject);
   const attendanceStatus = getAttendanceStatus(attendancePercent);
 
@@ -37,6 +51,12 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
     success: 'bg-success',
     warning: 'bg-warning',
     danger: 'bg-destructive',
+  };
+
+  const handleSaveEdit = () => {
+    const credits = parseInt(editCredits) || 1;
+    onUpdate({ name: editName, credits: Math.max(1, credits) });
+    setEditOpen(false);
   };
 
   return (
@@ -72,14 +92,73 @@ export const SubjectCard = ({ subject, onUpdate, onRemove }: SubjectCardProps) =
             </Select>
             <p className="text-xs text-muted-foreground">Grade Point</p>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onRemove}
-            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <div className="flex flex-col gap-1">
+            <Dialog open={editOpen} onOpenChange={(open) => {
+              setEditOpen(open);
+              if (open) {
+                setEditName(subject.name);
+                setEditCredits(subject.credits.toString());
+              }
+            }}>
+              <DialogTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-muted"
+                >
+                  <Pencil className="h-3 w-3" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Edit Subject</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 pt-4">
+                  <div className="space-y-2">
+                    <Label>Subject Name</Label>
+                    <Input value={editName} onChange={(e) => setEditName(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Credits</Label>
+                    <Input 
+                      type="number" 
+                      min="1" 
+                      max="20"
+                      value={editCredits} 
+                      onChange={(e) => setEditCredits(e.target.value)} 
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Grade Point</Label>
+                    <Select
+                      value={subject.gradePoint.toString()}
+                      onValueChange={(value) => onUpdate({ gradePoint: parseFloat(value) })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue>{subject.gradePoint < 0 ? 'N/A' : subject.gradePoint}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {GRADE_OPTIONS.map((option) => (
+                          <SelectItem key={option.value} value={option.value}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button onClick={handleSaveEdit} className="w-full">Save Changes</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onRemove}
+              className="h-7 w-7 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          </div>
         </div>
       </div>
 

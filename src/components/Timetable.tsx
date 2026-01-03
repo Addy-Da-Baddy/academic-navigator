@@ -31,13 +31,20 @@ interface TimetableProps {
 
 const HOURS = Array.from({ length: 10 }, (_, i) => i + 8); // 8 AM to 5 PM
 
-const AddClassDialog = ({ day, onAdd }: { day: Day; onAdd: (entry: Omit<TimetableEntry, 'id'>) => void }) => {
-  const [open, setOpen] = useState(false);
-  const [shortName, setShortName] = useState('');
-  const [fullName, setFullName] = useState('');
-  const [room, setRoom] = useState('');
-  const [startHour, setStartHour] = useState('9');
-  const [endHour, setEndHour] = useState('10');
+interface ClassDialogProps {
+  day: Day;
+  entry?: TimetableEntry;
+  onSave: (entry: Omit<TimetableEntry, 'id'>) => void;
+  onClose: () => void;
+  open: boolean;
+}
+
+const ClassDialog = ({ day, entry, onSave, onClose, open }: ClassDialogProps) => {
+  const [shortName, setShortName] = useState(entry?.shortName || '');
+  const [fullName, setFullName] = useState(entry?.fullName || '');
+  const [room, setRoom] = useState(entry?.room || '');
+  const [startHour, setStartHour] = useState(entry?.startHour.toString() || '9');
+  const [endHour, setEndHour] = useState(entry?.endHour.toString() || '10');
 
   const handleSubmit = () => {
     if (!shortName || !fullName) {
@@ -50,7 +57,7 @@ const AddClassDialog = ({ day, onAdd }: { day: Day; onAdd: (entry: Omit<Timetabl
       toast.error('End time must be after start time');
       return;
     }
-    onAdd({
+    onSave({
       shortName,
       fullName,
       room: room || 'TBA',
@@ -58,23 +65,15 @@ const AddClassDialog = ({ day, onAdd }: { day: Day; onAdd: (entry: Omit<Timetabl
       endHour: end,
       time: `${start.toString().padStart(2, '0')}:00-${end.toString().padStart(2, '0')}:00`,
     });
-    setOpen(false);
-    setShortName('');
-    setFullName('');
-    setRoom('');
-    toast.success('Class added');
+    onClose();
+    toast.success(entry ? 'Class updated' : 'Class added');
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="sm">
-          <Plus className="h-4 w-4 mr-1" /> Add Class
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add Class to {day}</DialogTitle>
+          <DialogTitle>{entry ? `Edit Class on ${day}` : `Add Class to ${day}`}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4 pt-4">
           <div className="space-y-2">
@@ -113,7 +112,7 @@ const AddClassDialog = ({ day, onAdd }: { day: Day; onAdd: (entry: Omit<Timetabl
               </Select>
             </div>
           </div>
-          <Button onClick={handleSubmit} className="w-full">Add Class</Button>
+          <Button onClick={handleSubmit} className="w-full">{entry ? 'Save Changes' : 'Add Class'}</Button>
         </div>
       </DialogContent>
     </Dialog>
@@ -123,6 +122,7 @@ const AddClassDialog = ({ day, onAdd }: { day: Day; onAdd: (entry: Omit<Timetabl
 export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry }: TimetableProps) => {
   const [view, setView] = useState<'week' | 'day'>('week');
   const [selectedDay, setSelectedDay] = useState<Day>(getCurrentDayName());
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<{ day: Day; entry: TimetableEntry } | null>(null);
   const currentDay = getCurrentDayName();
   const todayClasses = timetable[currentDay] || [];
@@ -164,7 +164,9 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
               ))}
             </SelectContent>
           </Select>
-          <AddClassDialog day={selectedDay} onAdd={(entry) => onAddEntry(selectedDay, entry)} />
+          <Button variant="outline" size="sm" onClick={() => setAddDialogOpen(true)}>
+            <Plus className="h-4 w-4 mr-1" /> Add Class
+          </Button>
           <Button
             variant={view === 'week' ? 'default' : 'outline'}
             size="sm"
@@ -181,6 +183,24 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
           </Button>
         </div>
       </div>
+
+      {/* Add/Edit Dialog */}
+      <ClassDialog
+        day={editingEntry?.day || selectedDay}
+        entry={editingEntry?.entry}
+        open={addDialogOpen || !!editingEntry}
+        onSave={(entry) => {
+          if (editingEntry) {
+            onUpdateEntry(editingEntry.day, editingEntry.entry.id, entry);
+          } else {
+            onAddEntry(selectedDay, entry);
+          }
+        }}
+        onClose={() => {
+          setAddDialogOpen(false);
+          setEditingEntry(null);
+        }}
+      />
 
       {/* Up Next Card */}
       {view === 'day' && (
@@ -261,16 +281,27 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
                             >
                               <div className="font-medium text-sm text-primary">{classEntry.shortName}</div>
                               <div className="text-xs text-muted-foreground mt-0.5">{classEntry.room}</div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onRemoveEntry(day, classEntry.id);
-                                  toast.success('Class removed');
-                                }}
-                                className="absolute top-1 right-1 opacity-0 group-hover/cell:opacity-100 p-1 rounded hover:bg-destructive/20 text-destructive"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </button>
+                              <div className="absolute top-1 right-1 opacity-0 group-hover/cell:opacity-100 flex gap-1">
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setEditingEntry({ day, entry: classEntry });
+                                  }}
+                                  className="p-1 rounded hover:bg-muted text-muted-foreground hover:text-primary"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </button>
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onRemoveEntry(day, classEntry.id);
+                                    toast.success('Class removed');
+                                  }}
+                                  className="p-1 rounded hover:bg-destructive/20 text-destructive"
+                                >
+                                  <Trash2 className="h-3 w-3" />
+                                </button>
+                              </div>
                             </button>
                           ) : (
                             <div className="h-12" />
@@ -344,17 +375,27 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
                               Room {entry.room}
                             </div>
                           </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
-                            onClick={() => {
-                              onRemoveEntry(currentDay, entry.id);
-                              toast.success('Class removed');
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                          <div className="flex flex-col gap-1">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:bg-muted"
+                              onClick={() => setEditingEntry({ day: currentDay, entry })}
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 hover:text-destructive"
+                              onClick={() => {
+                                onRemoveEntry(currentDay, entry.id);
+                                toast.success('Class removed');
+                              }}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     </div>
