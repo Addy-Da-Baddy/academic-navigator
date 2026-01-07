@@ -118,6 +118,52 @@ export const useAcademicData = () => {
     }));
   }, []);
 
+  // Atomically mark as present (increments both attended and total together)
+  const markPresent = useCallback((semesterId: number, subjectId: string) => {
+    setData(prev => ({
+      ...prev,
+      semesters: {
+        ...prev.semesters,
+        [semesterId]: {
+          ...prev.semesters[semesterId],
+          subjects: prev.semesters[semesterId].subjects.map(s => {
+            if (s.id !== subjectId) return s;
+            return {
+              ...s,
+              attendance: {
+                attended: s.attendance.attended + 1,
+                total: s.attendance.total + 1,
+              },
+            };
+          }),
+        },
+      },
+    }));
+  }, []);
+
+  // Mark as absent (increments only total)
+  const markAbsent = useCallback((semesterId: number, subjectId: string) => {
+    setData(prev => ({
+      ...prev,
+      semesters: {
+        ...prev.semesters,
+        [semesterId]: {
+          ...prev.semesters[semesterId],
+          subjects: prev.semesters[semesterId].subjects.map(s => {
+            if (s.id !== subjectId) return s;
+            return {
+              ...s,
+              attendance: {
+                attended: s.attendance.attended,
+                total: s.attendance.total + 1,
+              },
+            };
+          }),
+        },
+      },
+    }));
+  }, []);
+
   const setAttendance = useCallback((semesterId: number, subjectId: string, attended: number, total: number) => {
     setData(prev => ({
       ...prev,
@@ -180,6 +226,44 @@ export const useAcademicData = () => {
     }));
   }, []);
 
+  const importData = useCallback((importedData: {
+    targetCGPA?: number;
+    semesters: Array<{
+      id?: number;
+      name: string;
+      subjects: Array<{
+        name: string;
+        credits: number;
+        gradePoint: number | string;
+      }>;
+    }>;
+  }) => {
+    const newSemesters: Record<number, Semester> = {};
+    
+    importedData.semesters.forEach((sem, index) => {
+      const semId = sem.id || index + 1;
+      newSemesters[semId] = {
+        id: semId,
+        name: sem.name || `Semester ${semId}`,
+        subjects: sem.subjects.map(sub => ({
+          id: generateId(),
+          name: sub.name,
+          credits: sub.credits,
+          gradePoint: sub.gradePoint === 'N/A' ? -1 : (typeof sub.gradePoint === 'number' ? sub.gradePoint : -1),
+          attendance: { attended: 0, total: 0 },
+        })),
+      };
+    });
+
+    setData(prev => ({
+      ...prev,
+      targetCGPA: importedData.targetCGPA || prev.targetCGPA,
+      semesters: newSemesters,
+    }));
+    
+    setActiveSemester(1);
+  }, []);
+
   const currentSemester = data.semesters[activeSemester];
   const sgpaData = currentSemester ? calculateSGPA(currentSemester) : { sgpa: 0, totalCredits: 0 };
   const cgpaData = calculateCGPA(data.semesters);
@@ -200,9 +284,12 @@ export const useAcademicData = () => {
     removeSemester,
     updateAttendance,
     setAttendance,
+    markPresent,
+    markAbsent,
     setTargetCGPA,
     updateTimetableEntry,
     addTimetableEntry,
     removeTimetableEntry,
+    importData,
   };
 };

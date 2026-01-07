@@ -22,10 +22,13 @@ const Index = () => {
     removeSemester,
     updateAttendance,
     setAttendance,
+    markPresent,
+    markAbsent,
     setTargetCGPA,
     updateTimetableEntry,
     addTimetableEntry,
     removeTimetableEntry,
+    importData,
   } = useAcademicData();
 
   return (
@@ -47,6 +50,7 @@ const Index = () => {
             onAddSubject={addSubject}
             onRemoveSubject={removeSubject}
             onSetTargetCGPA={setTargetCGPA}
+            onImportData={importData}
           />
         )}
         
@@ -64,6 +68,8 @@ const Index = () => {
             onRemoveSemester={removeSemester}
             onUpdateAttendance={updateAttendance}
             onSetAttendance={setAttendance}
+            onMarkPresent={markPresent}
+            onMarkAbsent={markAbsent}
           />
         )}
         

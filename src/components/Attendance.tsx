@@ -16,6 +16,8 @@ interface AttendanceProps {
   onRemoveSemester: (id: number) => void;
   onUpdateAttendance: (semesterId: number, subjectId: string, delta: number, type: 'attended' | 'total') => void;
   onSetAttendance: (semesterId: number, subjectId: string, attended: number, total: number) => void;
+  onMarkPresent: (semesterId: number, subjectId: string) => void;
+  onMarkAbsent: (semesterId: number, subjectId: string) => void;
 }
 
 export const Attendance = ({
@@ -27,6 +29,8 @@ export const Attendance = ({
   onRemoveSemester,
   onUpdateAttendance,
   onSetAttendance,
+  onMarkPresent,
+  onMarkAbsent,
 }: AttendanceProps) => {
   // Calculate overall attendance
   const totalClasses = currentSemester?.subjects.reduce((acc, s) => acc + s.attendance.total, 0) || 0;
@@ -194,10 +198,7 @@ export const Attendance = ({
                           size="sm"
                           variant="outline"
                           className="h-7 text-xs"
-                          onClick={() => {
-                            onUpdateAttendance(activeSemester, subject.id, 1, 'attended');
-                            onUpdateAttendance(activeSemester, subject.id, 1, 'total');
-                          }}
+                          onClick={() => onMarkPresent(activeSemester, subject.id)}
                         >
                           Present
                         </Button>
@@ -205,7 +206,7 @@ export const Attendance = ({
                           size="sm"
                           variant="outline"
                           className="h-7 text-xs"
-                          onClick={() => onUpdateAttendance(activeSemester, subject.id, 1, 'total')}
+                          onClick={() => onMarkAbsent(activeSemester, subject.id)}
                         >
                           Absent
                         </Button>
