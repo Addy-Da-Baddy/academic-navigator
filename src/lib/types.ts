@@ -23,6 +23,7 @@ export interface TimetableEntry {
   room: string;
   startHour: number;
   endHour: number;
+  color?: string;
 }
 
 export interface Timetable {

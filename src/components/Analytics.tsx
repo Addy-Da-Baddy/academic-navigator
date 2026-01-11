@@ -123,7 +123,7 @@ export const Analytics = ({ data, cgpaData }: AnalyticsProps) => {
         {/* CGPA Trend Chart */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h3 className="mb-4 font-medium text-card-foreground">CGPA Trend</h3>
-          <div className="h-64">
+          <div className="h-80">
             {cgpaTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={cgpaTrend}>
@@ -135,7 +135,14 @@ export const Analytics = ({ data, cgpaData }: AnalyticsProps) => {
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis domain={[0, 10]} stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => value.toFixed(1)} />
+                <YAxis 
+                  domain={[(dataMin: number) => Math.max(0, Math.floor(dataMin) - 1), (dataMax: number) => Math.min(10, Math.ceil(dataMax) + 1)]} 
+                  stroke="hsl(var(--muted-foreground))" 
+                  fontSize={12} 
+                  tickFormatter={(value) => value.toFixed(1)}
+                  tickCount={5}
+                  interval={0}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
@@ -164,13 +171,20 @@ export const Analytics = ({ data, cgpaData }: AnalyticsProps) => {
         {/* SGPA by Semester */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h3 className="mb-4 font-medium text-card-foreground">SGPA by Semester</h3>
-          <div className="h-64">
+          <div className="h-80">
             {semesterData.filter(s => s.hasGrades).length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={semesterData.filter(s => s.hasGrades)}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis domain={[0, 10]} stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(value) => value.toFixed(1)} />
+                <YAxis 
+                  domain={[(dataMin: number) => Math.max(0, Math.floor(dataMin) - 1), (dataMax: number) => Math.min(10, Math.ceil(dataMax) + 1)]} 
+                  stroke="hsl(var(--muted-foreground))" 
+                  fontSize={12} 
+                  tickFormatter={(value) => value.toFixed(1)}
+                  tickCount={5}
+                  interval={0}
+                />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
@@ -193,7 +207,7 @@ export const Analytics = ({ data, cgpaData }: AnalyticsProps) => {
         {/* Grade Distribution */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h3 className="mb-4 font-medium text-card-foreground">Grade Distribution</h3>
-          <div className="h-64">
+          <div className="h-80">
             {gradedSubjects.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={gradeDistribution} layout="vertical">
@@ -233,7 +247,7 @@ export const Analytics = ({ data, cgpaData }: AnalyticsProps) => {
         {/* Credits per Semester */}
         <div className="rounded-xl border border-border bg-card p-5">
           <h3 className="mb-4 font-medium text-card-foreground">Credits Earned per Semester</h3>
-          <div className="h-64">
+          <div className="h-80">
             {semesterData.filter(s => s.hasGrades).length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={semesterData.filter(s => s.hasGrades)}>
