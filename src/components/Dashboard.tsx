@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Target, TrendingUp, BookOpen, Award, Pencil, Check, Download, Upload, FileJson, FileText, FileUp } from 'lucide-react';
+import { Target, TrendingUp, BookOpen, Award, Pencil, Check, Download, Upload, FileJson, FileText, FileUp, Link, Copy } from 'lucide-react';
 import { Semester, AppData } from '@/lib/types';
 import { StatCard } from './StatCard';
 import { ProgressRing } from './ProgressRing';
@@ -15,8 +15,10 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
+import LZString from 'lz-string';
 
 interface DashboardProps {
   data: AppData;
@@ -243,6 +245,44 @@ export const Dashboard = ({
     toast.success('PDF export opened in print dialog');
   };
 
+  const generateShareLink = async () => {
+    try {
+      // Create a minimal export of the data
+      const shareData = {
+        t: data.targetCGPA,
+        s: Object.values(data.semesters).map(sem => ({
+          i: sem.id,
+          n: sem.name,
+          sub: sem.subjects.map(sub => ({
+            n: sub.name,
+            c: sub.credits,
+            g: sub.gradePoint,
+            a: sub.attended,
+            tot: sub.total,
+          })),
+        })),
+        tt: data.timetable,
+      };
+
+      const compressed = LZString.compressToEncodedURIComponent(JSON.stringify(shareData));
+      const shareUrl = `${window.location.origin}${window.location.pathname}#data=${compressed}`;
+      
+      // Check if URL is too long
+      if (shareUrl.length > 8000) {
+        toast.error('Data too large for URL sharing. Use JSON export instead.');
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      toast.success(`Share link copied! (${Math.round(shareUrl.length / 1024)}KB)`, {
+        description: 'Send this link to sync on another device',
+        duration: 5000,
+      });
+    } catch (error) {
+      toast.error('Failed to generate share link');
+    }
+  };
+
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Hidden file input for import */}
@@ -287,6 +327,11 @@ export const Dashboard = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={generateShareLink}>
+                <Link className="h-4 w-4 mr-2" />
+                Share via Link
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={exportAsJSON}>
                 <FileJson className="h-4 w-4 mr-2" />
                 Export as JSON

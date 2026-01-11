@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, GripVertical, Pencil } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Pencil, Copy, Clipboard, Download, Upload } from 'lucide-react';
 import { Timetable as TimetableType, DAYS, Day, TimetableEntry } from '@/lib/types';
-import { getCurrentDayName } from '@/lib/store';
+import { getCurrentDayName, generateId } from '@/lib/store';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 
 interface TimetableProps {
@@ -26,6 +33,7 @@ interface TimetableProps {
   onUpdateEntry: (day: Day, entryId: string, updates: Partial<TimetableEntry>) => void;
   onAddEntry: (day: Day, entry: Omit<TimetableEntry, 'id'>) => void;
   onRemoveEntry: (day: Day, entryId: string) => void;
+  onImportTimetable?: (timetable: TimetableType) => void;
 }
 
 // Time slots matching the user's timetable exactly
@@ -205,11 +213,12 @@ const ClassDialog = ({ day, entry, onSave, onClose, open }: ClassDialogProps) =>
   );
 };
 
-export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry }: TimetableProps) => {
+export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry, onImportTimetable }: TimetableProps) => {
   const [selectedDay, setSelectedDay] = useState<Day>('MONDAY');
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<{ day: Day; entry: TimetableEntry } | null>(null);
   const [dragData, setDragData] = useState<{ day: Day; entry: TimetableEntry } | null>(null);
+  const [clipboard, setClipboard] = useState<TimetableEntry | null>(null);
   const currentDay = getCurrentDayName();
 
   // Find class that starts at this slot
@@ -314,6 +323,96 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
     setDragData(null);
   };
 
+  // Copy a class to clipboard
+  const copyClass = (entry: TimetableEntry) => {
+    setClipboard(entry);
+    toast.success(`Copied "${entry.shortName}" to clipboard`);
+  };
+
+  // Paste class to a day/slot
+  const pasteClass = (day: Day, slot: typeof TIME_SLOTS[0]) => {
+    if (!clipboard || slot.isBreak) return;
+
+    const duration = clipboard.endHour - clipboard.startHour;
+    const newStartHour = slot.start;
+    const newEndHour = newStartHour + duration;
+
+    // Check if slot is occupied
+    const targetClasses = timetable[day] || [];
+    const isOccupied = targetClasses.some(c => 
+      (newStartHour >= c.startHour && newStartHour < c.endHour) ||
+      (newEndHour > c.startHour && newEndHour <= c.endHour)
+    );
+
+    if (isOccupied) {
+      toast.error('Slot is already occupied');
+      return;
+    }
+
+    onAddEntry(day, {
+      shortName: clipboard.shortName,
+      fullName: clipboard.fullName,
+      room: clipboard.room,
+      color: clipboard.color,
+      startHour: newStartHour,
+      endHour: newEndHour,
+      time: `${formatTime(newStartHour)}-${formatTime(newEndHour)}`,
+    });
+    toast.success(`Pasted "${clipboard.shortName}" to ${day}`);
+  };
+
+  // Export timetable as JSON
+  const exportTimetable = () => {
+    const exportData = {
+      exportDate: new Date().toISOString(),
+      timetable: timetable,
+    };
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `timetable-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Timetable exported!');
+  };
+
+  // Import timetable from JSON
+  const importTimetable = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        try {
+          const data = JSON.parse(event.target?.result as string);
+          if (data.timetable && onImportTimetable) {
+            // Add IDs to entries if missing
+            const processedTimetable: TimetableType = {} as TimetableType;
+            for (const day of DAYS) {
+              processedTimetable[day] = (data.timetable[day] || []).map((entry: any) => ({
+                ...entry,
+                id: entry.id || generateId(),
+              }));
+            }
+            onImportTimetable(processedTimetable);
+            toast.success('Timetable imported!');
+          } else {
+            toast.error('Invalid timetable format');
+          }
+        } catch (error) {
+          toast.error('Failed to parse file');
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  };
+
   return (
     <div className="space-y-6 animate-fade-in font-mono">
       {/* Header - Orange gradient like user's design */}
@@ -349,9 +448,41 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
           >
             <Plus className="h-4 w-4 mr-1" /> ADD CLASS
           </Button>
+          {clipboard && (
+            <span className="text-xs text-muted-foreground px-2 py-1 bg-muted rounded">
+              <Clipboard className="h-3 w-3 inline mr-1" />
+              {clipboard.shortName} copied
+            </span>
+          )}
         </div>
-        <p className="text-xs text-muted-foreground">Drag classes to move • Click to edit</p>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="font-mono">
+                <Download className="h-4 w-4 mr-1" /> Export
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={exportTimetable}>
+                Export Timetable JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="font-mono">
+                <Upload className="h-4 w-4 mr-1" /> Import
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={importTimetable}>
+                Import Timetable JSON
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
+      <p className="text-xs text-muted-foreground text-center">Drag to move • Click to edit • Right-click to copy/paste</p>
 
       {/* Timetable Grid */}
       <div className="rounded-lg overflow-hidden" style={{ backgroundColor: '#1a1a1a' }}>
@@ -465,10 +596,22 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
+                                  copyClass(entry);
+                                }}
+                                className="p-1 rounded transition-colors"
+                                style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                title="Copy class"
+                              >
+                                <Copy className="h-3 w-3" style={{ color: color.text }} />
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   setEditingEntry({ day, entry });
                                 }}
                                 className="p-1 rounded transition-colors"
                                 style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
+                                title="Edit class"
                               >
                                 <Pencil className="h-3 w-3" style={{ color: color.text }} />
                               </button>
@@ -479,6 +622,7 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
                                   toast.success('Class removed');
                                 }}
                                 className="p-1 rounded transition-colors hover:bg-red-500/30"
+                                title="Delete class"
                               >
                                 <Trash2 className="h-3 w-3 text-red-400" />
                               </button>
@@ -488,19 +632,26 @@ export const Timetable = ({ timetable, onUpdateEntry, onAddEntry, onRemoveEntry 
                       );
                     }
 
-                    // Empty slot - can drop here
+                    // Empty slot - can drop here or paste
                     return (
                       <td 
                         key={slotIndex}
                         className={cn(
-                          'border transition-colors',
-                          dragData && 'hover:bg-white/10'
+                          'border transition-colors cursor-pointer',
+                          dragData && 'hover:bg-white/10',
+                          clipboard && 'hover:bg-green-500/20'
                         )}
                         style={{ backgroundColor: '#0f0f0f', borderColor: '#333' }}
                         onDragOver={handleDragOver}
                         onDrop={(e) => handleDrop(e, day, slot)}
+                        onClick={() => clipboard && pasteClass(day, slot)}
+                        title={clipboard ? `Click to paste "${clipboard.shortName}"` : undefined}
                       >
-                        <div className="h-[50px]" />
+                        <div className="h-[50px] flex items-center justify-center">
+                          {clipboard && (
+                            <Clipboard className="h-4 w-4 text-green-500/50 opacity-0 hover:opacity-100 transition-opacity" />
+                          )}
+                        </div>
                       </td>
                     );
                   })}

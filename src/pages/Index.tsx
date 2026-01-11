@@ -28,6 +28,7 @@ const Index = () => {
     updateTimetableEntry,
     addTimetableEntry,
     removeTimetableEntry,
+    importTimetable,
     importData,
   } = useAcademicData();
 
@@ -79,6 +80,7 @@ const Index = () => {
             onUpdateEntry={updateTimetableEntry}
             onAddEntry={addTimetableEntry}
             onRemoveEntry={removeTimetableEntry}
+            onImportTimetable={importTimetable}
           />
         )}
       </main>

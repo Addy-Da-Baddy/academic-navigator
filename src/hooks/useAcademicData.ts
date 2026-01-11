@@ -226,6 +226,13 @@ export const useAcademicData = () => {
     }));
   }, []);
 
+  const importTimetable = useCallback((timetable: typeof data.timetable) => {
+    setData(prev => ({
+      ...prev,
+      timetable,
+    }));
+  }, []);
+
   const importData = useCallback((importedData: {
     targetCGPA?: number;
     semesters: Array<{
@@ -290,6 +297,7 @@ export const useAcademicData = () => {
     updateTimetableEntry,
     addTimetableEntry,
     removeTimetableEntry,
+    importTimetable,
     importData,
   };
 };
